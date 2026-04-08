@@ -8,7 +8,7 @@ const TIMES = [10, 20, 30];
 
 export { MODES };
 
-export default function IsochroneControls({ mode, minutes, onMode, onMinutes, enabled, onEnabled }) {
+export default function IsochroneControls({ mode, minutes, onMode, onMinutes, enabled, onEnabled, inline }) {
   const btn = (active, onClick, children) => (
     <button
       onClick={onClick}
@@ -29,7 +29,7 @@ export default function IsochroneControls({ mode, minutes, onMode, onMinutes, en
   );
 
   return (
-    <div style={{
+    <div style={inline ? {} : {
       position: "absolute",
       bottom: 40,
       right: 20,

@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import Map from "react-map-gl/maplibre";
 import { DeckGL } from "@deck.gl/react";
 import { GeoJsonLayer } from "@deck.gl/layers";
@@ -72,6 +72,14 @@ export default function App() {
   const [isoMinutes, setIsoMinutes] = useState(10);
   const [isoEnabled, setIsoEnabled] = useState(false);
   const [hovered, setHovered]       = useState(null); // { geoid, centroid }
+  const [isMobile, setIsMobile]     = useState(window.innerWidth < 640);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
   const debounceRef = useRef(null);
 
   const countySummary = useMemo(() => {
@@ -234,70 +242,106 @@ export default function App() {
         <Map mapStyle={MAPSTYLE} />
       </DeckGL>
 
-      <div style={{
-        position: "absolute",
-        bottom: 40,
-        left: 20,
-        background: "rgba(10,10,20,0.85)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: 12,
-        padding: "16px 20px",
-        backdropFilter: "blur(12px)",
-        minWidth: 220,
-      }}>
-        <div style={{ fontSize: 11, letterSpacing: 2, color: "#ccc", marginBottom: 10 }}>
-          JOB SURPLUS / WORKER SURPLUS
-        </div>
+      {/* ── Desktop layout ── */}
+      {!isMobile && (<>
         <div style={{
-          height: 10, borderRadius: 4,
-          background: "linear-gradient(to right, #00ff64, transparent, #ff00b4)",
-          marginBottom: 6,
-        }} />
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#ddd" }}>
-          <span>Job surplus</span><span>Worker surplus</span>
-        </div>
-        <div style={{ marginTop: 8, fontSize: 11, color: "#aaa", lineHeight: 1.5 }}>
-          Working-age pop. ≤200% poverty − low-wage jobs<br />Elevation = magnitude of imbalance<br />ACS 2022 · LODES 2022
-        </div>
-      </div>
-
-      {countySummary && (
-        <div style={{
-          position: "absolute",
-          top: 80,
-          right: 20,
-          background: "rgba(10,10,20,0.85)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: 12,
-          padding: "16px 20px",
-          backdropFilter: "blur(12px)",
-          maxWidth: 280,
-          zIndex: 10,
+          position: "absolute", bottom: 40, left: 20,
+          background: "rgba(10,10,20,0.85)", border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 12, padding: "16px 20px", backdropFilter: "blur(12px)", minWidth: 220,
         }}>
-          <div style={{ fontSize: 10, letterSpacing: 2, color: "#ccc", marginBottom: 10 }}>COUNTY COMPARISON</div>
-          <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.8 }}>
-            <span style={{ color: "#ff00b4", fontWeight: 600 }}>Milwaukee County</span> has{" "}
-            <strong style={{ color: "#ccc" }}>{countySummary.mkeWorkers.toLocaleString()}</strong> low-income workers
-            but only <strong style={{ color: "#ccc" }}>{countySummary.mkeJobs.toLocaleString()}</strong> low-wage jobs
-            — a deficit of <strong style={{ color: "#ff00b4" }}>{countySummary.mkeExcess.toLocaleString()}</strong>.
+          <div style={{ fontSize: 11, letterSpacing: 2, color: "#ccc", marginBottom: 10 }}>JOB SURPLUS / WORKER SURPLUS</div>
+          <div style={{ height: 10, borderRadius: 4, background: "linear-gradient(to right, #00ff64, transparent, #ff00b4)", marginBottom: 6 }} />
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#ddd" }}>
+            <span>Job surplus</span><span>Worker surplus</span>
           </div>
-          <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.8, marginTop: 8 }}>
-            <span style={{ color: "#00ff64", fontWeight: 600 }}>Surrounding suburbs</span> have{" "}
-            <strong style={{ color: "#ccc" }}>{countySummary.subJobs.toLocaleString()}</strong> low-wage jobs
-            but only <strong style={{ color: "#ccc" }}>{countySummary.subWorkers.toLocaleString()}</strong> low-income workers
-            — a surplus of <strong style={{ color: "#00ff64" }}>{countySummary.subExcess.toLocaleString()}</strong>.
+          <div style={{ marginTop: 8, fontSize: 11, color: "#aaa", lineHeight: 1.5 }}>
+            Working-age pop. ≤200% poverty − low-wage jobs<br />Elevation = magnitude of imbalance<br />ACS 2022 · LODES 2022
           </div>
         </div>
-      )}
 
-      <IsochroneControls
-        mode={isoMode}
-        minutes={isoMinutes}
-        onMode={setIsoMode}
-        onMinutes={setIsoMinutes}
-        enabled={isoEnabled}
-        onEnabled={setIsoEnabled}
-      />
+        {countySummary && (
+          <div style={{
+            position: "absolute", top: 80, right: 20,
+            background: "rgba(10,10,20,0.85)", border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 12, padding: "16px 20px", backdropFilter: "blur(12px)", maxWidth: 280, zIndex: 10,
+          }}>
+            <div style={{ fontSize: 10, letterSpacing: 2, color: "#ccc", marginBottom: 10 }}>COUNTY COMPARISON</div>
+            <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.8 }}>
+              <span style={{ color: "#ff00b4", fontWeight: 600 }}>Milwaukee County</span> has{" "}
+              <strong style={{ color: "#ccc" }}>{countySummary.mkeWorkers.toLocaleString()}</strong> low-income workers
+              but only <strong style={{ color: "#ccc" }}>{countySummary.mkeJobs.toLocaleString()}</strong> low-wage jobs
+              — a deficit of <strong style={{ color: "#ff00b4" }}>{countySummary.mkeExcess.toLocaleString()}</strong>.
+            </div>
+            <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.8, marginTop: 8 }}>
+              <span style={{ color: "#00ff64", fontWeight: 600 }}>Surrounding suburbs</span> have{" "}
+              <strong style={{ color: "#ccc" }}>{countySummary.subJobs.toLocaleString()}</strong> low-wage jobs
+              but only <strong style={{ color: "#ccc" }}>{countySummary.subWorkers.toLocaleString()}</strong> low-income workers
+              — a surplus of <strong style={{ color: "#00ff64" }}>{countySummary.subExcess.toLocaleString()}</strong>.
+            </div>
+          </div>
+        )}
+
+        <IsochroneControls
+          mode={isoMode} minutes={isoMinutes}
+          onMode={setIsoMode} onMinutes={setIsoMinutes}
+          enabled={isoEnabled} onEnabled={setIsoEnabled}
+        />
+      </>)}
+
+      {/* ── Mobile bottom drawer ── */}
+      {isMobile && (<>
+        <button onClick={() => setDrawerOpen(o => !o)} style={{
+          position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)",
+          background: "rgba(10,10,20,0.9)", border: "1px solid rgba(255,255,255,0.15)",
+          borderRadius: 20, padding: "8px 20px", color: "#ccc", fontSize: 12,
+          letterSpacing: 1, cursor: "pointer", zIndex: 20,
+        }}>
+          {drawerOpen ? "CLOSE" : "INFO & CONTROLS"}
+        </button>
+
+        {drawerOpen && (
+          <div style={{
+            position: "absolute", bottom: 60, left: 0, right: 0,
+            background: "rgba(10,10,20,0.95)", borderTop: "1px solid rgba(255,255,255,0.1)",
+            padding: "20px 20px 28px", zIndex: 20, overflowY: "auto", maxHeight: "60vh",
+          }}>
+            {/* Legend */}
+            <div style={{ fontSize: 10, letterSpacing: 2, color: "#ccc", marginBottom: 8 }}>JOB SURPLUS / WORKER SURPLUS</div>
+            <div style={{ height: 8, borderRadius: 4, background: "linear-gradient(to right, #00ff64, transparent, #ff00b4)", marginBottom: 4 }} />
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#ddd", marginBottom: 4 }}>
+              <span>Job surplus</span><span>Worker surplus</span>
+            </div>
+            <div style={{ fontSize: 11, color: "#aaa", lineHeight: 1.5, marginBottom: 16 }}>
+              Working-age pop. ≤200% poverty − low-wage jobs · ACS 2022 · LODES 2022
+            </div>
+
+            {/* County comparison */}
+            {countySummary && (<>
+              <div style={{ fontSize: 10, letterSpacing: 2, color: "#ccc", marginBottom: 8 }}>COUNTY COMPARISON</div>
+              <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.8, marginBottom: 8 }}>
+                <span style={{ color: "#ff00b4", fontWeight: 600 }}>Milwaukee County</span> has{" "}
+                <strong style={{ color: "#ccc" }}>{countySummary.mkeWorkers.toLocaleString()}</strong> low-income workers
+                but only <strong style={{ color: "#ccc" }}>{countySummary.mkeJobs.toLocaleString()}</strong> low-wage jobs,
+                a deficit of <strong style={{ color: "#ff00b4" }}>{countySummary.mkeExcess.toLocaleString()}</strong>.
+              </div>
+              <div style={{ fontSize: 12, color: "#aaa", lineHeight: 1.8, marginBottom: 16 }}>
+                <span style={{ color: "#00ff64", fontWeight: 600 }}>Surrounding suburbs</span> have{" "}
+                <strong style={{ color: "#ccc" }}>{countySummary.subJobs.toLocaleString()}</strong> low-wage jobs
+                but only <strong style={{ color: "#ccc" }}>{countySummary.subWorkers.toLocaleString()}</strong> low-income workers,
+                a surplus of <strong style={{ color: "#00ff64" }}>{countySummary.subExcess.toLocaleString()}</strong>.
+              </div>
+            </>)}
+
+            {/* Isochrone controls */}
+            <IsochroneControls
+              mode={isoMode} minutes={isoMinutes}
+              onMode={setIsoMode} onMinutes={setIsoMinutes}
+              enabled={isoEnabled} onEnabled={setIsoEnabled}
+              inline
+            />
+          </div>
+        )}
+      </>)}
 
       {(!ready || loading) && (
         <div style={{

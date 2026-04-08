@@ -5,7 +5,7 @@ export default function Header() {
       top: 0,
       left: 0,
       right: 0,
-      padding: "24px 32px",
+      padding: "16px 20px",
       background: "linear-gradient(to bottom, rgba(10,10,20,0.95) 0%, transparent 100%)",
       zIndex: 10,
       pointerEvents: "none",
@@ -14,7 +14,7 @@ export default function Header() {
         MILWAUKEE METRO · SPATIAL MISMATCH
       </div>
       <h1 style={{
-        fontSize: 28,
+        fontSize: "clamp(16px, 4vw, 28px)",
         fontWeight: 700,
         letterSpacing: -0.5,
         lineHeight: 1.1,
@@ -26,11 +26,12 @@ export default function Header() {
         <span style={{ fontSize: 16, fontWeight: 400, letterSpacing: 0 }}>A Case Study of Milwaukee, Wisconsin</span>
       </h1>
       <p style={{
-        marginTop: 10,
-        fontSize: 13,
+        marginTop: 8,
+        fontSize: "clamp(11px, 2.5vw, 13px)",
         color: "#aaa",
         maxWidth: 440,
         lineHeight: 1.6,
+        display: window.innerWidth < 640 ? "none" : "block",
       }}>
         Working-age residents below 200% of the poverty line versus available
         low-wage jobs, by census tract. Pink = more workers than jobs.
