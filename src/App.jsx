@@ -220,17 +220,6 @@ export default function App() {
 
     const excess = (p.workers_below_200pct ?? 0) - (p.jobs_low ?? 0);
     return {
-      style: {
-        backgroundColor: "rgba(10,10,20,0.92)",
-        border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: "8px",
-        padding: "10px 14px",
-        color: "#ccc",
-        maxWidth: "min(260px, 90vw)",
-        left: isMobile ? "5vw" : undefined,
-        right: isMobile ? "5vw" : undefined,
-        transform: isMobile ? "none" : undefined,
-      },
       html: `
         <div style="font-size:12px;min-width:200px">
           <b>${excess > 0 ? "+" : ""}${excess.toLocaleString()} ${excess > 0 ? "excess workers" : "job surplus"}</b><br/>
@@ -301,9 +290,9 @@ export default function App() {
 
       {/* ── Mobile bottom drawer ── */}
       {isMobile && (
-        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 50 }}>
+        <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 9999 }}>
         <button onClick={() => setDrawerOpen(o => !o)} style={{
-          position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)",
+          position: "fixed", bottom: 20, left: "50%", transform: "translateX(-50%)",
           background: "rgba(10,10,20,0.9)", border: "1px solid rgba(255,255,255,0.15)",
           borderRadius: 20, padding: "10px 24px", color: "#ccc", fontSize: 12,
           letterSpacing: 1, cursor: "pointer", pointerEvents: "all",
@@ -313,7 +302,7 @@ export default function App() {
 
         {drawerOpen && (
           <div style={{
-            position: "absolute", bottom: 60, left: 0, right: 0,
+            position: "fixed", bottom: 60, left: 0, right: 0,
             background: "rgba(10,10,20,0.97)", borderTop: "1px solid rgba(255,255,255,0.1)",
             padding: "20px 20px 28px", overflowY: "auto", maxHeight: "65vh",
             pointerEvents: "all",
