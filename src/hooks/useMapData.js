@@ -10,7 +10,7 @@ export function useMapData(query, ready) {
     async function load() {
       setLoading(true);
       try {
-        const res = await fetch(`${window.location.origin}/data/tracts_merged.geojson`);
+        const res = await fetch(`${import.meta.env.BASE_URL}data/tracts_merged.geojson`);
         const geojson = await res.json();
         setTracts(geojson);
       } catch (e) {
